@@ -5,13 +5,11 @@ import select
 import argparse
 from RNode import RNodeInterface
 
-serialPort = "/dev/ttyACM0"
-
-def rx(data, rnode):
-	message = data.decode("utf-8")
-	print("Received a packet: "+message)
-	print("RSSI: "+str(rnode.r_stat_rssi)+" dBm")
-	print("SNR:  "+str(rnode.r_stat_snr)+" dB")
+def packetize(str):
+    utf8_bytes = str.encode('utf-8')
+    max_size = 255
+    chunks = [utf8_bytes[i:i+max_size] for i in range(0, len(utf8_bytes), max_size)]
+    return chunks
 
 def main():
 
@@ -23,14 +21,11 @@ def main():
 	parser.add_argument("--cr", action="store", metavar="rate", type=int, default=5, help="Coding rate")
 	parser.add_argument("port", nargs="?", default=None, help="Serial port where RNode is attached", type=str)
 	parser.add_argument("payload", nargs="?", default=None, help="The payload to be transmitted", type=str)
+	parser.print_usage = parser.print_help
 	args = parser.parse_args()
 
 	if not (args.freq and args.bw and args.sf and args.cr):
-		print("Please input startup configuration:")
-
-	if not args.freq:
-		print("Frequency in Hz:\t", end=' ')
-		args.freq = int(input())
+		print("Please input the LoRa frequency using the --freq argument")
 	
 	if not args.payload and not select.select([sys.stdin, ], [], [], 0.0)[0]:
 		print("Please provide a message to be sent")
@@ -38,8 +33,8 @@ def main():
 
 	try:
 		rnode = RNodeInterface(
-			callback = rx,
-			name = "RandoRNode",
+			callback = None,
+			name = "LoRaTransmitCLI",
 			port = args.port,
 			frequency = args.freq,
 			bandwidth = args.bw,
@@ -52,12 +47,14 @@ def main():
 		exit()
 
 	if not args.payload and select.select([sys.stdin, ], [], [], 0.0)[0]:
-		message = sys.stdin.read()
+		message = sys.stdin.read().rstrip()
 	else:
-		message = ' '.join(args.payload)
-	data = message.encode("utf-8")
-	rnode.send(data)
-	print(f"Payload sent: '{message}'\n")
+		message = args.payload
+	data = packetize(message)
+	for chunk in data:
+		rnode.queue(chunk)
+	rnode.process_queue()
+	rnode.log(f"Payload sent in {len(data)} packets!")
 
 if __name__ == "__main__":
 	main()
