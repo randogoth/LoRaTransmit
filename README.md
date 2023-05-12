@@ -8,7 +8,7 @@ It's meant to be complementary to the packet sniffer [LoRaMon](https://github.co
 
 provide payload as command line argument or via pipe
 
-```sh
+```
 usage: loratransmit [-h] [--freq Hz] [--bw Hz] [--txp dBm] [--sf factor]
                        [--cr rate]
                        [port] [payload]
@@ -32,12 +32,12 @@ options:
 
 Payload passed as argument
 
-```sh
+```
 $ /bin/python3 loratransmit.py --freq 917500000 /dev/ttyACM0 "Hello World"
 ```
 
 Payload passed through pipe
 
-```sh
+```
 $ echo "Hello World" | /bin/python3 loratransmit.py --freq 917500000 /dev/ttyACM0
 ```
