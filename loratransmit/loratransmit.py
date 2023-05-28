@@ -3,7 +3,7 @@
 import sys
 import select
 import argparse
-from RNode import RNodeInterface
+from .RNode import RNodeInterface
 
 def packetize(str):
     utf8_bytes = str.encode('utf-8')

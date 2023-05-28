@@ -4,6 +4,12 @@ Simple commandline raw LoRa packet transmitter for [RNode](https://unsigned.io/a
 
 It's meant to be complementary to the packet sniffer [LoRaMon](https://github.com/markqvist/LoRaMon) and uses the latest [Python Module](https://github.com/markqvist/RNode_Firmware/tree/master/Python%20Module) that comes with the [RNode Firmware](https://github.com/markqvist/RNode_Firmware).
 
+## Install
+
+```
+$ pip install loratransmit
+```
+
 ## Usage
 
 provide payload as command line argument or via pipe
@@ -33,11 +39,11 @@ options:
 Payload passed as argument
 
 ```
-$ /bin/python3 loratransmit.py --freq 917500000 /dev/ttyACM0 "Hello World"
+$ loratransmit --freq 917500000 /dev/ttyACM0 "Hello World"
 ```
 
 Payload passed through pipe
 
 ```
-$ echo "Hello World" | /bin/python3 loratransmit.py --freq 917500000 /dev/ttyACM0
+$ echo "Hello World" | loratransmit --freq 917500000 /dev/ttyACM0
 ```
